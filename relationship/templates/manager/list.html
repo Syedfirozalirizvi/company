@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<center class = "mt-5">
+    
+        <h1 class="display-6">Managers List!</h1>
+      
+    </center>
+<div class="container">
+<div class="row">
+    <div class="col mt-5">
+        <div class="float-right">
+            <a href="{% url 'create_manager' %}"class="btn btn-success ""btn btn-success ">Create</a>
+        </div>
+<br>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Contact</th>
+            <th scope="col" colspan="2">Action</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for manager in managers %}
+        <tr>
+            <td >{{manager.first_name}}</td>
+            <td>{{manager.last_name}}</td>
+            <td>{{manager.email}}</td>
+            <td>{{manager.mobile}}</td>
+            <td ><a href="{% url 'delete_manager' manager.id %}"class="btn btn-danger btn-sm">Delete</a>
+                <a href="{% url 'update_manager' manager.id %}" class="btn btn-primary btn-sm">Update</a></td>
+                
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+</div>
+
+{% endblock content %}
