@@ -29,6 +29,8 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+LOGIN_URL= '/login/'
+LOGIN_REDIRECT_URL='dashboard/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'relationship',
     'crispy_forms',
+    'accounts',
 ]
 
 MIDDLEWARE = [
