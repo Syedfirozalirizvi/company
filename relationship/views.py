@@ -5,7 +5,11 @@ from django.contrib import messages
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
-
+from django.views import generic
+from django.views.generic.edit import CreateView  
+from django.views.generic.edit import DeleteView
+from django.urls import reverse
+from django.views.generic.edit import UpdateView
 @method_decorator(login_required,name='dispatch')
 class Home(View):
     
@@ -14,146 +18,111 @@ class Home(View):
         
         return render(request, 'index.html')
 @method_decorator(login_required,name='dispatch')
-class CreateEmployee(View):
+class CreateEmployee(CreateView):
+    template_name = 'employee/create.html'
+    form_class = EmployeeForm
     
-        def post(self,request, *args, **kwargs):
-            
-            employee_form = EmployeeForm(request.POST)
-            if employee_form.is_valid():
-                employee_form.save()
-                messages.success(request, 'Successfully Employee Created!')
-                return redirect('employee_list')
-            
-        def get(self,request, *args, **kwargs):
-            
-            employee_form = EmployeeForm()
-            return render(request,'employee/create.html',{'forms':employee_form})
+    def get_success_url(self):
+        return reverse('employee_list')
+    
 @method_decorator(login_required,name='dispatch')
-class EmployeeList(View):
+class EmployeeList(generic.ListView):
+    model = Employee
+    context_object_name = 'employees'
+    template_name = 'employee/list.html'
     
-    def get(self,request, *args, **kwargs):
-        
-        employee_list = Employee.objects.all()
-        ctx = {'employees':employee_list}
-        return render(request,'employee/list.html',ctx)
 @method_decorator(login_required,name='dispatch')
-class EmployeeDelelte(View):
+class EmployeeDelete(DeleteView):
     
-    def get(self,request,id, *args, **kwargs):
+    model = Employee
+    context_object_name = 'employees'
+    
+    
+    def get_success_url(self):
+        return reverse('employee_list')
         
-        employee = Employee.objects.get(id=id).delete()
-        messages.success(request, 'Employee Deleted!')
-        return redirect('employee_list')
 @method_decorator(login_required,name='dispatch')    
-class UpdataEmployee(View):
+class UpdataEmployee(UpdateView):
     
-    def get(self,request,id, *args, **kwargs):
-        employee = get_object_or_404(Employee, id = id)
-        
-        employee_form = EmployeeForm(instance = employee)
-        return render(request,'employee/update.html',{'forms':employee_form})
+    model = Employee
+    fields = '__all__'
+    template_name = 'employee/update.html'
     
-    def post(self,request,id, *args, **kwargs):
-        employee = get_object_or_404(Employee, id = id)
-        employee_form = EmployeeForm(request.POST or None, instance = employee)
-        if employee_form.is_valid():
-            employee_form.save()
-            messages.success(request, 'Successfully Employee Updated!')
-            return redirect('employee_list')
+    def get_success_url(self):
+        return reverse('employee_list')
     
 
 @method_decorator(login_required,name='dispatch')
-class CreateProject(View):
+class CreateProject(CreateView):
     
-    def post(self,request, *args, **kwargs):
-
-        project_form = ProjectForm(request.POST)
-        if project_form.is_valid():
-            project_form.save()
-        return redirect('project_list')
+    template_name = 'project/create.html'
+    form_class = ProjectForm
     
-    def get(self,request, *args, **kwargs):
-        project_form = ProjectForm()
-        return render(request,'project/create.html',{'forms':project_form})
+    def get_success_url(self):
+        return reverse('project_list')
 
 @method_decorator(login_required,name='dispatch')
-class ProjectList(View):
+class ProjectList(generic.ListView):
     
-    def get(self,request, *args, **kwargs):
+    model = Project
+    context_object_name = 'projects'
+    template_name = 'project/list.html'
         
-        project_list = Project.objects.all()
-        ptx = {'projects':project_list}
-        return render(request,'project/list.html',ptx)
+        
 @method_decorator(login_required,name='dispatch')
-class ProjectDelete(View):
+class ProjectDelete(DeleteView):
     
-    def get(self,request,id,*args, **kwargs):
+    model = Project
+    context_object_name = 'projects'
+    
+    def get_success_url(self):
+        return reverse('project_list')
         
-        project = Project.objects.get(id=id).delete()
-        messages.success(request, 'Project Deleted!')
-        return redirect('project_list')
+        
 @method_decorator(login_required,name='dispatch')
-class UpdateProject(View):
+class UpdateProject(UpdateView):
     
-    def get(self,request,id,*args, **kwargs):
-        
-        project = get_object_or_404(Project,id=id)
-        project_form = ProjectForm(instance = project)
-        return render(request,'project/update.html',{'forms':project_form})
+   model = Project
+   fields ='__all__'
+   template_name = 'project/update.html'
+   
+   def get_success_url(self):
+        return reverse('project_list')
     
-    def post(self,request,id, *args, **kwargs):
-        
-            project = get_object_or_404(Project,id=id)
-            project_form = ProjectForm(request.POST or None, instance = project)
-            if project_form.is_valid():
-                project_form.save()
-                messages.success(request, 'Successfully Employee Updated!')
-                return redirect('project_list')
+    
 @method_decorator(login_required,name='dispatch')
-class CreateManager(View):
+class CreateManager(CreateView):
     
-    def post(self,request, *args, **kwargs):
+    template_name = 'manager/create.html'
+    form_class = ManagerField
+    
+    def get_success_url(self):
+        return reverse('manager_list')
 
-        manager_form = ManagerField(request.POST)
-        if manager_form.is_valid():
-            manager_form.save()
-        return redirect('manager_list')
-    
-    def get(self,request,*args, **kwargs):
         
-        manager_form = ManagerField()
-        return render(request,'manager/create.html',{'forms':manager_form})
+@method_decorator(login_required,name='get')
+class ManagerList(generic.ListView):
+    model = Manager
+    context_object_name = 'managers'
+    template_name = 'manager/list.html'
+        
 @method_decorator(login_required,name='dispatch')
-class ManagerList(View):
+class ManagerDelete(DeleteView):
     
-    def get(self,request,*args, **kwargs):
+    model = Manager
+    context_object_name = 'managers'
         
-        manager_list = Manager.objects.all()
-        mtx = {'managers':manager_list}
-        return render(request,'manager/list.html',mtx)
-@method_decorator(login_required,name='dispatch')
-class ManagerDelete(View):
-    
-    def get(self,request,id,*args, **kwargs):
-        
-        manager = Manager.objects.get(id=id).delete()
-        messages.success(request, 'Project Deleted!')
-        return redirect('manager_list')
+    def get_success_url(self):
+        return reverse('manager_list')
 @method_decorator(login_required,name='dispatch')    
-class UpdateManager(View):
+class UpdateManager(UpdateView):
     
-    def get(self,request,id,*args, **kwargs):
-        
-        manager = get_object_or_404(Manager,id=id)
-        manager_form = ManagerField(instance = manager)
-        return render(request,'project/update.html',{'forms':manager_form})
+    model = Manager
+    fields = '__all__'
+    template_name = 'manager/update.html'
     
-    def post(self,request,id, *args, **kwargs):
-        
-        manager = get_object_or_404(Manager,id=id)
-        manager_form = ManagerField(request.POST or None, instance = manager)
-        if manager_form.is_valid():
-            manager_form.save()
-            messages.success(request, 'Successfully Employee Updated!')
-            return redirect('manager_list')
+    def get_success_url(self):
+        return reverse('manager_list')
+    
+
         

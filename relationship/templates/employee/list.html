@@ -27,7 +27,7 @@
     </thead>
     <tbody>
         
-        {% for employee in employees %}
+        {% for employee in employees reversed %}
         <tr>
             <td >{{employee.first_name}}</td>
             <td>{{employee.last_name}}</td>

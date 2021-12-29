@@ -26,7 +26,7 @@
     </thead>
     <tbody>
         
-        {% for manager in managers %}
+        {% for manager in managers reversed %}
         <tr>
             <td >{{manager.first_name}}</td>
             <td>{{manager.last_name}}</td>

@@ -27,7 +27,7 @@
     </thead>
     <tbody>
         
-        {% for project in projects %}
+        {% for project in projects reversed %}
         <tr>
             <td >{{project.project}}</td>
             <td >{{project.employee.first_name}}</td>
