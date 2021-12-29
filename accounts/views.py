@@ -1,10 +1,9 @@
 from django.contrib import messages
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.http.response import HttpResponseRedirect  
+from django.shortcuts import redirect, render,HttpResponse
 from django.views import View
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from .forms import LoginForm
+from django.contrib.auth.models import User 
+from .forms import LoginForm ,RegisterForm
 from django.contrib.auth import login, authenticate, logout
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
@@ -19,17 +18,37 @@ class Home(View):
 class Register(View):
     
     def get(self,request):
-        form=UserCreationForm()
+        form=RegisterForm()
         ctx={'form':form}
         return render(request,'html/register.html',ctx)
     
     def post(self,request):
         
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Successfully Employee Created!')
-            return redirect('login')
+            username = form.cleaned_data.get('username')
+            user =User.objects.get(username=username)
+            if user:
+                messages.success(request, 'Alrwady exixts')
+                return redirect('register')
+            else:    
+                password = form.cleaned_data.get('password')
+                confirm_password= form.cleaned_data.get('confirm_password')
+                if password == confirm_password:
+                    user = User.objects.create(username=username,password=password)
+                    messages.success(request, 'Successfully User Created!')
+                    return redirect('login')
+                else:
+                    messages.success(request, 'Password Not match Created!')
+                    return redirect('register')
+                
+        
+        else:
+            messages.success(request, 'Not Valid data')
+            return HttpResponseRedirect('register')
+            
+            
+        
         
 class Login(View):
     
@@ -47,6 +66,7 @@ class Login(View):
             user = authenticate(request, username = username, password = password)
             if user:
                 login(request, user)
+                
                 messages.success(request, 'Successfully Logged in!')
                 return redirect('home')
             else:
@@ -58,4 +78,5 @@ class Logout(View):
     
     def get(self,request):
         logout(request)
+
         return HttpResponseRedirect(settings.LOGIN_URL)

@@ -11,6 +11,7 @@ class Home(View):
     
     def get(self,request, *args, **kwargs):
         
+        
         return render(request, 'index.html')
 @method_decorator(login_required,name='dispatch')
 class CreateEmployee(View):
